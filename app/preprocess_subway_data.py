@@ -33,7 +33,7 @@ class Preprocess_Train_Data:
             protobuffed_data.append(protobuf_data)
         self.all_subway_data = protobuffed_data
         #for testing
-        save_to_json(self.all_subway_data, 'mtatestdata')
+        # save_to_json(self.all_subway_data, 'mtatestdata')
 
 
     @staticmethod    
