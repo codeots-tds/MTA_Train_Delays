@@ -1,6 +1,10 @@
+import os
 import pandas as pd
 import requests as r
 import time
+
+import dotenv
+import platformdirs
 from google.transit import gtfs_realtime_pb2
 
 
@@ -29,8 +33,8 @@ train_endpoint_dict = {
         '7' : 'https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs',
         # 'SIR' : 'https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-si',
     }
-with open('/home/ra-terminal/api_keys/mta_key/mtakey.txt') as f:
-    mta_subway_key = f.readlines()[0]
+dotenv.load_dotenv(dotenv_path=platformdirs.user_config_dir(appname="com.github.ra1993.transitbuddy"))
+mta_subway_key = os.environ.get("MTA_API_KEY", "")
 
 class Subway_Data:
     def __init__(self, **kwargs):
