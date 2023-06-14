@@ -1,10 +1,13 @@
+import json
 import logging
 import os
 from functools import lru_cache
 
 import dotenv
 import platformdirs
+import protobuf_to_dict
 import requests
+from google.transit import gtfs_realtime_pb2
 
 _log = logging.getLogger(__name__)
 
@@ -54,11 +57,18 @@ class Subway_Data:
         for idx, train in enumerate(list(route_to_URL.keys())):
             train_response = cached_get(route_to_URL[train])
             _log.info(f"fetching {route_to_URL[train]=}")
-            self.all_train_data.append(train_response.content)
+
+            feed = gtfs_realtime_pb2.FeedMessage()
+            feed.ParseFromString(train_response.content)
+            self.all_train_data = [
+                protobuf_to_dict.protobuf_to_dict(entity) for entity in feed.entity
+            ]
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     subway_data_obj = Subway_Data()
     subway_data_obj.get_train_data()
-    # TODO -- subway_data_obj.all_train_data is a list of protofuf strings; do something useful with them
+    with open("/tmp/wat.json", "w") as outf:
+        json.dump(subway_data_obj.all_train_data, outf)
+        print(f"Dumped buncha stuff to {outf=}")

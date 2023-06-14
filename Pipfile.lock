@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c986f62faeddc3701e793adf1ddc07756ff92c7774fd6d2f8df0f84febeb5bf1"
+            "sha256": "2ad73efb7b3756666332e69b320c91b077af976081590de3e15cd03eabb434ee"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -211,6 +211,13 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==4.23.2"
+        },
+        "protobuf3-to-dict": {
+            "hashes": [
+                "sha256:1e42c25b5afb5868e3a9b1962811077e492c17557f9c66f0fe40d821375d2b5a"
+            ],
+            "index": "pypi",
+            "version": "==0.1.5"
         },
         "python-dateutil": {
             "hashes": [
