@@ -63,7 +63,7 @@ class SubwayData:
 
             feed = gtfs_realtime_pb2.FeedMessage()
             feed.ParseFromString(train_response.content)
-            self.all_train_data = list(feed.entity)
+            self.all_train_data.extend(list(feed.entity))
 
     def partition_train_data(self):
         for entity in self.all_train_data:
