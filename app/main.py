@@ -52,6 +52,9 @@ def cached_get(url):
 class SubwayData:
     def __init__(self):
         self.all_train_data = []
+        self.trip_updates = []
+        self.alerts = []
+        self.vehicles = []
 
     def get_train_data(self):
         for idx, train in enumerate(list(route_to_URL.keys())):
@@ -60,15 +63,27 @@ class SubwayData:
 
             feed = gtfs_realtime_pb2.FeedMessage()
             feed.ParseFromString(train_response.content)
-            self.all_train_data = [
-                protobuf_to_dict.protobuf_to_dict(entity) for entity in feed.entity
-            ]
+            self.all_train_data = list(feed.entity)
+
+    def partition_train_data(self):
+        for entity in self.all_train_data:
+            if entity.HasField("trip_update"):
+                self.trip_updates.append(protobuf_to_dict.protobuf_to_dict(entity))
+            elif entity.HasField("vehicle"):
+                self.vehicles.append(protobuf_to_dict.protobuf_to_dict(entity))
+            elif entity.HasField("alert"):
+                self.alerts.append(protobuf_to_dict.protobuf_to_dict(entity))
+            else:
+                _log.warning(f"Dunno wtf to do with {entity=}")
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     subway_data_obj = SubwayData()
     subway_data_obj.get_train_data()
-    with open("/tmp/wat.json", "w") as outf:
-        json.dump(subway_data_obj.all_train_data, outf)
-        print(f"Dumped buncha stuff to {outf=}")
+    subway_data_obj.partition_train_data()
+
+    for attribute in ("trip_updates", "vehicles", "alerts"):
+        with open(f"/tmp/{attribute}.json", "w") as outf:
+            json.dump(getattr(subway_data_obj, attribute), outf)
+            print(f"Dumped buncha {attribute} stuff to {outf=}")
