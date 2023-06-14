@@ -85,5 +85,5 @@ if __name__ == "__main__":
 
     for attribute in ("trip_updates", "vehicles", "alerts"):
         with open(f"/tmp/{attribute}.json", "w") as outf:
-            json.dump(getattr(subway_data_obj, attribute), outf)
+            json.dump(getattr(subway_data_obj, attribute), outf, sort_keys=True, indent=2)
             print(f"Dumped buncha {attribute} stuff to {outf=}")
