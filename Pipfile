@@ -6,8 +6,6 @@ name = "pypi"
 [packages]
 pandas = "*"
 requests = "*"
-protobuf = "*"
-protobuf-to-dict = "*"
 gtfs-realtime-bindings = "*"
 platformdirs = "*"
 python-dotenv = "*"
