@@ -16,4 +16,4 @@ then
    python3 -m pipenv install
 fi
 
-./.venv/bin/python3 app/subway_data.py
+./.venv/bin/python3 app/main.py
