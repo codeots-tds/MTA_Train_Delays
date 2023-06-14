@@ -49,8 +49,8 @@ def cached_get(url):
     return requests.get(url, headers=headers)
 
 
-class Subway_Data:
-    def __init__(self, **kwargs):
+class SubwayData:
+    def __init__(self):
         self.all_train_data = []
 
     def get_train_data(self):
@@ -67,7 +67,7 @@ class Subway_Data:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    subway_data_obj = Subway_Data()
+    subway_data_obj = SubwayData()
     subway_data_obj.get_train_data()
     with open("/tmp/wat.json", "w") as outf:
         json.dump(subway_data_obj.all_train_data, outf)
