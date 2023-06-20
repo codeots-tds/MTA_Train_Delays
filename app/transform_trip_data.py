@@ -1,6 +1,7 @@
 import pandas as pd
 from preprocess_subway_data import pre_processed_subway_data
-
+import datetime
+import time
 
 class Transform_Trip_Data:
     def __init__(self, **kwargs):
@@ -10,13 +11,6 @@ class Transform_Trip_Data:
         for idx, trip in enumerate(self.trip_updates):
             trip['trip_update']['trip']['id'] = trip['id']
             del trip['id']
-
-    # def create_trip_id_dict(self):    
-    #     self.trip_id_dict = {}
-    #     for idx, trip in enumerate(self.trip_updates):
-    #         trip_id = trip['trip_update']['trip']['trip_id']
-    #         self.trip_id_dict[trip_id] = trip
-    #         del trip['trip_update']['trip']['trip_id']
 
     def parse_arrival_and_departure(self):
         #may need to remove stop_id_arrival for ones that show both arrival and departure
@@ -43,20 +37,26 @@ class Transform_Trip_Data:
             final_trip_list.append(flat_data)
         self.trip_updates = final_trip_list
 
+    def convert_time_data(self):
+        for idx, trip in enumerate(self.trip_updates):
+            if 'arrival' in trip.keys():
+                arrival_time = trip['arrival']['time']
+                arrival_time = datetime.datetime.fromtimestamp(
+                int(arrival_time)).strftime('%I:%M:%S %p')
+                trip['arrival'] = arrival_time
+            if 'departure' in trip.keys():
+                departure_time = trip['departure']['time']
+                departure_time = datetime.datetime.fromtimestamp(
+                int(departure_time)).strftime('%I:%M:%S %p')
+                trip['departure'] = departure_time
+
     def convert_to_df(self):
-        # print(self.trip_updates)
-        # print('-------')
-        # print(self.trip_updates[50])
         df = pd.DataFrame(self.trip_updates)
-        print(df.head(5))
 
-
-    def trip_dict_to_df(self):
-        pass
 
 transformed_trip_updates = Transform_Trip_Data(trip_list = pre_processed_subway_data.trip_updates)
 transformed_trip_updates.add_id_to_trip()
-# transformed_trip_updates.create_trip_id_dict()
 transformed_trip_updates.parse_arrival_and_departure()
 transformed_trip_updates.remove_extra_keys()
+transformed_trip_updates.convert_time_data()
 transformed_trip_updates.convert_to_df()

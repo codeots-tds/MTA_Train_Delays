@@ -13,10 +13,6 @@ class General_Preprocessing:
     def __init__(self, **kwargs):
         self.data = kwargs.get('all_data')
 
-    def remove_time_dict(self):
-        print(self.data)
-        pass
-
     def convert_time(self):
         pass
 
@@ -68,15 +64,16 @@ class Preprocess_MTA_Data:
                     else:
                         self.alert_updates.append(item3)
 
-#general preprocessing
-general_preprocessed = General_Preprocessing(all_data = subway_data_obj.all_train_data)
-
-#Subway preprocessing
-# pre_processed_subway_data = Preprocess_MTA_Data(all_data = subway_data_obj.all_train_data)
-# pre_processed_subway_data.parse_feed_data()
-# pre_processed_subway_data.protobuf_data_to_dict()
-# pre_processed_subway_data.parse_trip_vehicle_data()
+# Subway preprocessing
+pre_processed_subway_data = Preprocess_MTA_Data(all_data = subway_data_obj.all_train_data)
+pre_processed_subway_data.parse_feed_data()
+pre_processed_subway_data.protobuf_data_to_dict()
+pre_processed_subway_data.parse_trip_vehicle_data()
 #--------
+
+#general trip preprocessing
+# general_preprocessed = General_Preprocessing(all_data = pre_processed_subway_data.trip_updates)
+# general_preprocessed.remove_time_dict(key1 = 'trip_update', key2 = 'stop_time_update')
 
 
 
