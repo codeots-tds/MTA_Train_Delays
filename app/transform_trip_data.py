@@ -13,7 +13,6 @@ class Transform_Trip_Data:
             del trip['id']
 
     def parse_arrival_and_departure(self):
-        #may need to remove stop_id_arrival for ones that show both arrival and departure
         for idx, trip_update in enumerate(self.trip_updates):
             for key, trip in trip_update.items():
                 times_list = trip['stop_time_update']
@@ -52,6 +51,7 @@ class Transform_Trip_Data:
 
     def convert_to_df(self):
         df = pd.DataFrame(self.trip_updates)
+
 
 
 transformed_trip_updates = Transform_Trip_Data(trip_list = pre_processed_subway_data.trip_updates)
