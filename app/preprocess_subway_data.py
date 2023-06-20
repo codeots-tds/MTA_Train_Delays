@@ -7,8 +7,25 @@ from google.transit import gtfs_realtime_pb2
 from protobuf_to_dict import protobuf_to_dict
 
 from util import save_to_json
+import time
 
-class Preprocess_Train_Data:
+class General_Preprocessing:
+    def __init__(self, **kwargs):
+        self.data = kwargs.get('all_data')
+
+    def remove_time_dict(self):
+        print(self.data)
+        pass
+
+    def convert_time(self):
+        pass
+
+    def convert_date(self):
+        pass
+
+
+
+class Preprocess_MTA_Data:
     def __init__(self, **kwargs):
         self.all_subway_data = kwargs.get('all_data')
         self.subway_data = []
@@ -35,36 +52,33 @@ class Preprocess_Train_Data:
         #for testing
         # save_to_json(self.all_subway_data, 'mtatestdata')
 
-
-    @staticmethod    
-    def parse_trip_vehicle_data(subway_data):
-        trip_update_list = [] #train trip updates
-        vehicle_list  = [] #vehicle info
-        train_alerts = [] #train alert messages
-        for idx, entity in enumerate(subway_data):
+ 
+    def parse_trip_vehicle_data(self): #needs to be refactored
+        self.trip_updates = [] #trips
+        self.vehicle_updates = [] #vehicles
+        self.alert_updates = [] #alert
+        for idx, entity in enumerate(self.all_subway_data):
             for key2, item2 in entity.items():
+                # print(item2)
                 for idx3, item3 in enumerate(item2):
                     if 'trip_update' in item3.keys():
-                        trip_update_list.append(item3)
+                        self.trip_updates.append(item3)
                     elif 'vehicle' in item3.keys():
-                        vehicle_list.append(item3)
+                        self.vehicle_updates.append(item3)
                     else:
-                        train_alerts.append(item3)
+                        self.alert_updates.append(item3)
 
-    
+#general preprocessing
+general_preprocessed = General_Preprocessing(all_data = subway_data_obj.all_train_data)
+
+#Subway preprocessing
+# pre_processed_subway_data = Preprocess_MTA_Data(all_data = subway_data_obj.all_train_data)
+# pre_processed_subway_data.parse_feed_data()
+# pre_processed_subway_data.protobuf_data_to_dict()
+# pre_processed_subway_data.parse_trip_vehicle_data()
+#--------
 
 
-        
-
-
-            
-
-
-pre_processed_subway_data = Preprocess_Train_Data(all_data = subway_data_obj.all_train_data)
-pre_processed_subway_data.parse_feed_data()
-pre_processed_subway_data.protobuf_data_to_dict()
-fixed_data = pre_processed_subway_data.parse_trip_vehicle_data(pre_processed_subway_data.all_subway_data)
-# print(flatted_data)
 
 if __name__ == '__main__':
 
