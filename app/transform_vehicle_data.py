@@ -5,11 +5,11 @@ import datetime
 
 class Transform_Vehicle_Data:
     def __init__(self, **kwargs):
-        self.all_vehicle_data = kwargs.get('data')
+        self.all_vehicle_updates = kwargs.get('data')
 
     def flatten_vehicle_data(self):
         vehicle_info = []
-        for idx, vehicle_data in enumerate(self.all_vehicle_data):
+        for idx, vehicle_data in enumerate(self.all_vehicle_updates):
             trip_id = vehicle_data['vehicle']['trip']['trip_id']
             start_date = vehicle_data['vehicle']['trip']['start_date']
             route_id = vehicle_data['vehicle']['trip']['route_id']
@@ -28,10 +28,15 @@ class Transform_Vehicle_Data:
                                 'timestamp': timestamp, 
                                 'stop_id' : stop_id}
             vehicle_info.append(vehicle_row_data)    
-        self.all_vehicle_data = vehicle_info
+        self.vehicle_updates = vehicle_info
 
     def convert_to_df(self):
-        self.df = pd.DataFrame(self.all_vehicle_data)
+        self.vehicle_df = pd.DataFrame(self.vehicle_updates)
+        # print(self.vehicle_df)
+
+transformed_vehicle_data = Transform_Vehicle_Data(data = pre_processed_subway_data.vehicle_updates)
+transformed_vehicle_data.flatten_vehicle_data()
+transformed_vehicle_data.convert_to_df()
 
 if __name__ == '__main__':
     transformed_vehicle_data = Transform_Vehicle_Data(data = pre_processed_subway_data.vehicle_updates)

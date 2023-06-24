@@ -10,6 +10,8 @@ protobuf = "*"
 protobuf-to-dict = "*"
 gtfs-realtime-bindings = "*"
 python-dotenv = "*"
+psycopg2 = "*"
+numpy = "*"
 
 [dev-packages]
 
