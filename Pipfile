@@ -11,9 +11,9 @@ protobuf-to-dict = "*"
 gtfs-realtime-bindings = "*"
 python-dotenv = "*"
 psycopg2 = "*"
-numpy = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"

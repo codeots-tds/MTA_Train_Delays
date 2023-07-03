@@ -1,20 +1,25 @@
-FROM python:3.8
+FROM python:3.9
 
 #working directory in app
-WORKDIR /app
+WORKDIR /subway_delay_app
 #copying all files in app directory
 COPY . /app/
 
-#install pipenv
+#install pipenv, updating bash, postgres
 RUN pip install pipenv
+RUN apt-get update && apt-get install -y postgresql-client
 
-# Copy Pipfile and Pipfile.lock file
+# Copy files over
 COPY Pipfile Pipfile.lock ./
+COPY ./bin/wait_for_pg_db.sh ./bin/wait_for_pg_db.sh
+COPY ./.env ./subway_delay_app/.env
 
-# Install dependencies
+# Run/Install dependencies
 RUN pipenv install --verbose
+RUN chmod +x ./bin/wait_for_pg_db.sh
+
+EXPOSE 80
 
 # Define the command to run your app using CMD which defines your runtime
 # Replace 'your-command-here' with your own command
-CMD ["python"]
-
+CMD ["./bin/wait_for_pg_db.sh"]

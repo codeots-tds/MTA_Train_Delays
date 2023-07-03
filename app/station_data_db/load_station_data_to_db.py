@@ -4,21 +4,33 @@ import psycopg2
 import os
 import io
 from dotenv import load_dotenv
+from time import sleep
 
 load_dotenv()
 
-subway_station_filepath = '/home/ra-terminal/datasets/mta_data/stationlocations.csv'
+# subway_station_filepath = '/home/ra-terminal/datasets/mta_data/stationlocations.csv'
+subway_station_filepath = '/mta_data/stationlocations.csv'
 subway_station_df = pd.read_csv(subway_station_filepath)
 
-conn = psycopg2.connect(
-    host = 'localhost',
-    port = os.getenv('DB_PORT', '5432'),
-    database = os.getenv('DB_NAME'),
-    user = os.getenv('DB_USER', 'mtapg1'),
-    password = os.getenv('DB_PASSWORD', '')
-)
-
-cur = conn.cursor()
+def create_conn(max_retries = 5):
+    retries = 0
+    while retries < max_retries:
+        try:
+            conn = psycopg2.connect(
+                host = os.getenv('DB_HOST', 'localhost'),
+                port = os.getenv('DB_PORT', '5432'),
+                database = os.getenv('DB_NAME'),
+                user = os.getenv('DB_USER', 'mtapg1'),
+                password = os.getenv('DB_PASSWORD', '')
+            )
+            print("Connection successful")
+            return conn
+        except psycopg2.OperationalError as e:
+            print("Unable to connect to the database, Retrying")
+            print(e)
+            sleep(5)
+            retries += 1
+    return conn
 
 insert_table_query = """COPY {subway_station_table} ({cols}) FROM STDIN WITH (FORMAT CSV, DELIMITER '\t')"""
 
@@ -54,6 +66,8 @@ def insert_data(conn, cur, df, sql_st):
     
 
 if __name__ == '__main__':
+    conn = create_conn()
+    cur = conn.cursor()
     cur.execute(drop_data_table)
     for table_st in create_tables:
          create_table(conn = conn, cur = cur, sql_st = table_st)
