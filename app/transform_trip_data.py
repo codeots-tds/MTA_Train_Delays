@@ -50,7 +50,7 @@ class Transform_Trip_Data:
                 trip['departure'] = departure_time
 
     def convert_to_df(self):
-        df = pd.DataFrame(self.trip_updates)
+        self.trip_df = pd.DataFrame(self.trip_updates)
 
 
 

@@ -1,0 +1,44 @@
+version: "3.7"
+
+services:
+  app:
+    build: ./
+    volumes:
+      - ./:/app
+    environment: 
+      DB_HOST : ${DB_HOST}
+      DB_USER : ${DB_USER}
+      DB_NAME : ${DB_NAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - 80:80
+    networks:
+      - mta-network
+    depends_on:
+      - mta_db_host
+
+  mta_db_host:
+    image: postgres:latest
+    restart: always
+    environment:
+        POSTGRES_DB: ${DB_NAME}
+        POSTGRES_USER: ${DB_USER}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - 5432:5432
+    volumes:
+      - mta_db_data:/var/lib/postgresql/data
+      - ./app/station_data_db:/pyscripts
+      - ./data:/mta_data/stationlocations.csv
+      - ./.env:/pyscripts/.env
+    networks:
+      - mta-network
+
+    # command: python /pyscripts/load_station_data_to_db.py
+
+volumes:
+  mta_db_data:
+
+networks:
+  mta-network:
+    
