@@ -36,19 +36,6 @@ class Transform_Trip_Data:
             final_trip_list.append(flat_data)
         self.trip_updates = final_trip_list
 
-    def convert_time_data(self):
-        for idx, trip in enumerate(self.trip_updates):
-            if 'arrival' in trip.keys():
-                arrival_time = trip['arrival']['time']
-                arrival_time = datetime.datetime.fromtimestamp(
-                int(arrival_time)).strftime('%I:%M:%S %p')
-                trip['arrival'] = arrival_time
-            if 'departure' in trip.keys():
-                departure_time = trip['departure']['time']
-                departure_time = datetime.datetime.fromtimestamp(
-                int(departure_time)).strftime('%I:%M:%S %p')
-                trip['departure'] = departure_time
-
     def convert_to_df(self):
         self.trip_df = pd.DataFrame(self.trip_updates)
 
@@ -58,5 +45,4 @@ transformed_trip_updates = Transform_Trip_Data(trip_list = pre_processed_subway_
 transformed_trip_updates.add_id_to_trip()
 transformed_trip_updates.parse_arrival_and_departure()
 transformed_trip_updates.remove_extra_keys()
-transformed_trip_updates.convert_time_data()
 transformed_trip_updates.convert_to_df()

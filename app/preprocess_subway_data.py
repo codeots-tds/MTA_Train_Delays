@@ -8,17 +8,34 @@ from google.transit import gtfs_realtime_pb2
 from protobuf_to_dict import protobuf_to_dict
 
 from util import save_to_json
+import datetime
 import time
 
 class General_Preprocessing:
     def __init__(self, **kwargs):
         self.data = kwargs.get('all_data')
 
-    def convert_time(self):
-        pass
+    def convert_time_data(self):
+        for trip in self.trip_updates:
+            stop_time_update_list = trip['trip_update']['stop_time_update']
+            for time_data in stop_time_update_list:
+                if 'arrival' in time_data.keys():
+                    arrival_time = time_data['arrival']['time']
+                    arrival_time = datetime.datetime.fromtimestamp(
+                    int(arrival_time)).strftime('%I:%M:%S %p')
+                    time_data['arrival'] = arrival_time
+                if 'departure' in time_data.keys():
+                    departure_time = time_data['departure']['time']
+                    departure_time = datetime.datetime.fromtimestamp(
+                    int(departure_time)).strftime('%I:%M:%S %p')
+                    time_data['departure'] = departure_time
 
-    def convert_date(self):
-        pass
+        for vehicle_data in self.vehicle_updates:
+            timestamp = vehicle_data['vehicle']['timestamp']
+            timestamp = datetime.datetime.fromtimestamp(
+                    int(timestamp)).strftime('%I:%M:%S %p')
+            vehicle_data['vehicle']['timestamp'] = timestamp
+
 
     def replace_stop_ids_with_station_names(self):
         stop_id_station_dict = station_data_df.set_index('GTFS Stop ID')['Stop Name'].to_dict()
@@ -41,7 +58,6 @@ class General_Preprocessing:
             bound2 = stop_id_v[-1]
             if stop2 in stop_id_station_dict.keys():
                 vehicle_data['vehicle']['stop_id'] = f'''{stop_id_station_dict[stop2] + '--' + bound2}'''
-        pass
 
 
 
@@ -94,6 +110,7 @@ pre_processed_subway_data.parse_feed_data()
 pre_processed_subway_data.protobuf_data_to_dict()
 pre_processed_subway_data.parse_trip_vehicle_data()
 pre_processed_subway_data.replace_stop_ids_with_station_names()
+pre_processed_subway_data.convert_time_data()
 #--------
 
 
