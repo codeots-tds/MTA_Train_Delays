@@ -6,6 +6,9 @@ from time import sleep
 
 load_dotenv()
 
+station_data_path = '/home/ra-terminal/datasets/mta_data/stationlocations.csv'
+station_data_df = pd.read_csv(station_data_path)
+
 def create_conn():
         print('Creating DB connection!')
         try:
@@ -36,11 +39,12 @@ def load_data(conn_obj, cur):
 
 
 
+
 if __name__ == '__main__':
-    conn = create_conn()
-    cur = conn.cursor()
-    df = load_data(conn_obj = conn, cur = cur)
-    cur.close()
-    conn.close()
-    print(df.head())
+    # conn = create_conn()
+    # cur = conn.cursor()
+    # df = load_data(conn_obj = conn, cur = cur)
+    # cur.close()
+    # conn.close()
+    # print(df.head())
     pass
