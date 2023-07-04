@@ -20,9 +20,32 @@ class General_Preprocessing:
     def convert_date(self):
         pass
 
+    def replace_stop_ids_with_station_names(self):
+        stop_id_station_dict = station_data_df.set_index('GTFS Stop ID')['Stop Name'].to_dict()
+        for trip in self.trip_updates:
+            stop_time_update_list = trip['trip_update']['stop_time_update']
+            for idx, stop_data in enumerate(stop_time_update_list):
+                bound = None
+                stop = None
+                stop_id = stop_data['stop_id']
+                stop = stop_id[:-1]
+                bound = stop_id[-1]
+                if stop in stop_id_station_dict.keys():
+                    stop_data['stop_id'] = f'''{stop_id_station_dict[stop] + '--' + bound}'''
+
+        for vehicle_data in self.vehicle_updates:
+            bound2 = None
+            stop2 = None
+            stop_id_v = vehicle_data['vehicle']['stop_id']
+            stop2 = stop_id_v[:-1]
+            bound2 = stop_id_v[-1]
+            if stop2 in stop_id_station_dict.keys():
+                vehicle_data['vehicle']['stop_id'] = f'''{stop_id_station_dict[stop2] + '--' + bound2}'''
+        pass
 
 
-class Preprocess_MTA_Data:
+
+class Preprocess_MTA_Data(General_Preprocessing):
     def __init__(self, **kwargs):
         self.all_subway_data = kwargs.get('all_data')
         self.subway_data = []
@@ -65,30 +88,6 @@ class Preprocess_MTA_Data:
                     else:
                         self.alert_updates.append(item3)
 
-    def replace_stop_ids_with_station_names(self):
-        stop_id_station_dict = station_data_df.set_index('GTFS Stop ID')['Stop Name'].to_dict()
-        for trip in self.trip_updates:
-            route_id = trip['trip_update']['trip']['route_id']
-            stop_time_update_list = trip['trip_update']['stop_time_update']
-            for idx, stop_data in enumerate(stop_time_update_list):
-                bound = None
-                stop = None
-                stop_id = stop_data['stop_id']
-                stop = stop_id[:-1]
-                bound = stop_id[-1]
-                if stop in stop_id_station_dict.keys():
-                    stop_data['stop_id'] = f'''{stop_id_station_dict[stop] + '--' + bound}'''
-
-        for vehicle_data in self.vehicle_updates:
-            bound2 = None
-            stop2 = None
-            stop_id_v = vehicle_data['vehicle']['stop_id']
-            stop2 = stop_id_v[:-1]
-            bound2 = stop_id_v[-1]
-            if stop2 in stop_id_station_dict.keys():
-                vehicle_data['vehicle']['stop_id'] = f'''{stop_id_station_dict[stop2] + '--' + bound2}'''
-        pass
-
 # Subway preprocessing
 pre_processed_subway_data = Preprocess_MTA_Data(all_data = subway_data_obj.all_train_data)
 pre_processed_subway_data.parse_feed_data()
@@ -96,10 +95,6 @@ pre_processed_subway_data.protobuf_data_to_dict()
 pre_processed_subway_data.parse_trip_vehicle_data()
 pre_processed_subway_data.replace_stop_ids_with_station_names()
 #--------
-
-#general trip preprocessing
-# general_preprocessed = General_Preprocessing(all_data = pre_processed_subway_data.trip_updates)
-# general_preprocessed.remove_time_dict(key1 = 'trip_update', key2 = 'stop_time_update')
 
 
 
