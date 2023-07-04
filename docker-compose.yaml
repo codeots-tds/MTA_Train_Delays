@@ -12,6 +12,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
     ports:
       - 80:80
+    networks:
+      - mta-network
     depends_on:
       - mta_db_host
 
@@ -29,9 +31,14 @@ services:
       - ./app/station_data_db:/pyscripts
       - ./data:/mta_data/stationlocations.csv
       - ./.env:/pyscripts/.env
+    networks:
+      - mta-network
 
     # command: python /pyscripts/load_station_data_to_db.py
 
 volumes:
   mta_db_data:
+
+networks:
+  mta-network:
     

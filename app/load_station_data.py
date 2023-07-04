@@ -7,41 +7,40 @@ from time import sleep
 load_dotenv()
 
 def create_conn():
-    while True:
+        print('Creating DB connection!')
         try:
             conn = psycopg2.connect(
-                host = os.getenv('DB_HOST'),
+                #using docker container i.p to connect locally to it
+                host = '192.168.0.2',
+                # host = os.getenv('DB_HOST')
                 port = os.getenv('DB_PORT', '5432'),
                 database = os.getenv('DB_NAME'),
                 user = os.getenv('DB_USER', 'mtapg1'),
                 password = os.getenv('DB_PASSWORD', '')
             )
             print("Connection successful")
-            break
+            return conn
         except psycopg2.OperationalError as e:
             print("Unable to connect to the database, Retrying")
             print(e)
             sleep(5)
-        finally:
-            if 'conn' in locals():
-                conn.close()
-        #         return conn
-        #     return conn
 
-# def load_stop_id_and_station_name(conn_obj, col_names):
-#     cur = conn_obj.cursor()
-#     query = f'''SELECT stop_id, station_name FROM subway_station_table;'''
-#     cur.execute(query)
-#     data = cur.fetchall()
-#     # df = pd.read_sql(f'SELECT {col_names} FROM subway_station_table', con = conn_obj)
-#     cur.close()
-#     conn.close()
-#     print(data)
+def load_data(conn_obj, cur):
+    print("Fetching data from the database...")
+    query = 'SELECT * FROM subway_station_table;'
+    cur.execute(query)
+    df = pd.DataFrame(cur.fetchall())
+    print("Query executed successfully")
+
+    return df
 
 
 
 if __name__ == '__main__':
     conn = create_conn()
-    # df = load_stop_id_and_station_name(conn_obj = conn, col_names= ['stop_id', 'station_name'])
-
+    cur = conn.cursor()
+    df = load_data(conn_obj = conn, cur = cur)
+    cur.close()
+    conn.close()
+    print(df.head())
     pass
