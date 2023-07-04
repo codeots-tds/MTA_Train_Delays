@@ -28,7 +28,8 @@ services:
       - 5432:5432
     volumes:
       - mta_db_data:/var/lib/postgresql/data
-      - ./app/station_data_db:/pyscripts
+      # - ./app/station_data_db:/pyscripts
+      - ../station_data_db:/pyscripts
       - ./data:/mta_data/stationlocations.csv
       - ./.env:/pyscripts/.env
     networks:
