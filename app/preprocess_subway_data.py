@@ -1,15 +1,16 @@
 import pandas as pd
 import json
-import time
+
 
 from subway_data import subway_data_obj
 from load_station_data import station_data_df
 from google.transit import gtfs_realtime_pb2
 from protobuf_to_dict import protobuf_to_dict
+from util import *
 
 from util import save_to_json
 import datetime
-import time
+
 
 class General_Preprocessing:
     def __init__(self, **kwargs):
@@ -21,13 +22,15 @@ class General_Preprocessing:
             for time_data in stop_time_update_list:
                 if 'arrival' in time_data.keys():
                     arrival_time = time_data['arrival']['time']
-                    arrival_time = datetime.datetime.fromtimestamp(
-                    int(arrival_time)).strftime('%I:%M:%S %p')
+                    # arrival_time = datetime.datetime.fromtimestamp(
+                    # int(arrival_time)).strftime('%I:%M:%S %p')
+                    arrival_time = convert_unix_to_standard_time(arrival_time)
                     time_data['arrival'] = arrival_time
                 if 'departure' in time_data.keys():
                     departure_time = time_data['departure']['time']
-                    departure_time = datetime.datetime.fromtimestamp(
-                    int(departure_time)).strftime('%I:%M:%S %p')
+                    # departure_time = datetime.datetime.fromtimestamp(
+                    # int(departure_time)).strftime('%I:%M:%S %p')
+                    departure_time = convert_unix_to_standard_time(departure_time)
                     time_data['departure'] = departure_time
 
         for vehicle_data in self.vehicle_updates:
@@ -116,6 +119,6 @@ pre_processed_subway_data.convert_time_data()
 
 
 if __name__ == '__main__':
-
+    print(pre_processed_subway_data.all_subway_data)
     print('done')
     pass

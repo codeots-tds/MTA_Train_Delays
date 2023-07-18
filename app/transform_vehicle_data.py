@@ -16,8 +16,6 @@ class Transform_Vehicle_Data:
             curr_stop_seq = vehicle_data['vehicle']['current_stop_sequence']
             current_status = vehicle_data['vehicle']['current_stop_sequence']
             timestamp = vehicle_data['vehicle']['timestamp']
-            timestamp = datetime.datetime.fromtimestamp(
-                int(timestamp)).strftime('%I:%M:%S %p')
             stop_id = vehicle_data['vehicle']['stop_id']
             vehicle_row_data = {'id': vehicle_data['id'], 
                                 'trip_id': trip_id, 

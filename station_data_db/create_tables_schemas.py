@@ -18,4 +18,15 @@ CREATE TABLE IF NOT EXISTS subway_station_table(
       PRIMARY KEY (stop_id)
 )"""
 
+#mta subway delays data. updated frequently and stores data upto a week.
+#week just might be the date_beginning_of_week and date_end_of_week
+create_subway_delays_table = """
+CREATE TABLE IF NOT EXISTS subway_delays_table(
+      subway_train VARCHAR(10),
+      num_of_delays VARCHAR(10),
+      month VARCHAR(10),
+      week VARCHAR(10),
+
+"""
+
 create_tables = [create_subway_station_table]
