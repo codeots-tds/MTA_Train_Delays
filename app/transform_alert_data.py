@@ -1,5 +1,7 @@
 import pandas as pd
 from preprocess_subway_data import pre_processed_subway_data
+
+from util import convert_data_to_df
 import time
 import datetime
 
@@ -17,11 +19,12 @@ class Transform_Alert_Data:
             self.alert_updates.append(alert_row)
 
     def convert_to_df(self):
-        self.alert_df = pd.DataFrame( self.alert_updates)
+        self.alert_df = convert_data_to_df(self.alert_updates)
 
 transformed_alert_data = Transform_Alert_Data(data = pre_processed_subway_data.alert_updates)
 transformed_alert_data.flatten_alert_data()
 transformed_alert_data.convert_to_df()
+
 
 if __name__ == '__main__':
     # transformed_alert_data = Transform_Alert_Data(data = pre_processed_subway_data.alert_updates)

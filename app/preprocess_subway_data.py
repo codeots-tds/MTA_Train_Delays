@@ -39,7 +39,6 @@ class General_Preprocessing:
                     int(timestamp)).strftime('%I:%M:%S %p')
             vehicle_data['vehicle']['timestamp'] = timestamp
 
-
     def replace_stop_ids_with_station_names(self):
         stop_id_station_dict = station_data_df.set_index('GTFS Stop ID')['Stop Name'].to_dict()
         for trip in self.trip_updates:

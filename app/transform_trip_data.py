@@ -1,5 +1,6 @@
 import pandas as pd
 from preprocess_subway_data import pre_processed_subway_data
+from util import convert_data_to_df
 import datetime
 import time
 
@@ -39,7 +40,8 @@ class Transform_Trip_Data:
         self.trip_updates = final_trip_list
 
     def convert_to_df(self):
-        self.trip_df = pd.DataFrame(self.trip_updates)
+       self.trip_df = convert_data_to_df(self.trip_updates)
+
 
 
 
