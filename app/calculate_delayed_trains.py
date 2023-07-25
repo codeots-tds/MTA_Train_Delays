@@ -21,12 +21,6 @@ class Delayed_Trains:
         self.vehicle_df = kwargs.get('vehicle_data')
         self.alert_df = kwargs.get('alert_data')
 
-
-    def calculate_train_delays_by_alert(self): #WIP
-        list_of_delayed_ids = list(set(self.alert_df['id']))
-        delayed_trains_by_alert = self.trip_df[self.trip_df['id'].isin(list_of_delayed_ids)]
-        pass
-
     @staticmethod
     def calc_train_delays(curr_postion_time, expected_arrival_time):
         #current vehicle position time- expected arrival time
@@ -60,7 +54,17 @@ class Delayed_Trains:
             if date not in self.train_delay_dict[train]:
                 self.train_delay_dict[train].append(date)
             continue
-        # print(self.train_delay_dict)
+
+    def calculate_train_delays_by_alert(self): #WIP
+        self.alert_df['exists_in_trips_df'] = self.alert_df['trip_id'].isin(self.trip_df['trip_id'])
+        print(self.train_delay_dict)
+        for idx, trip_data in self.alert_df.iterrows():
+            train = trip_data['route_id']
+            exist_val = trip_data['exists_in_trips_df']
+            if exist_val == True:
+                self.train_delay_dict[train][0] += 1
+            continue
+
 
     def build_train_delay_df(self):
         cols = ['train', 'num_of_delays', 'date']
@@ -74,6 +78,7 @@ class Delayed_Trains:
             else:
                 continue
 
+
 if __name__ == '__main__':
     delayed_trains_data = Delayed_Trains(
         trip_data = transformed_trip_updates.trip_df,
@@ -81,9 +86,5 @@ if __name__ == '__main__':
         alert_data = transformed_alert_data.alert_df
     )
     delayed_trains_data.train_delays_by_vehicle_trip()
+    delayed_trains_data.calculate_train_delays_by_alert()
     delayed_trains_data.build_train_delay_df()
-    # print(delayed_trains_data.vehicle_df)
-    # print(delayed_trains_data.alert_df)
-    # print(transformed_vehicle_data.vehicle_df)
-    # delayed_trains_data.calculate_train_delays_by_alert()
-    pass
