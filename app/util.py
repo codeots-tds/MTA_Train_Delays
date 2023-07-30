@@ -23,6 +23,15 @@ def get_time_delta(curr_postime_time, expected_arrival_time):
     tdelta = datetime.strptime(curr_postime_time, FMT) - datetime.strptime(expected_arrival_time, FMT)
     return tdelta
 
+def convert_str_to_date(date_str):
+    new_date = dt.strptime(date_str, "%Y%m%d")
+    formatted_date = new_date.strftime("%m/%d/%Y")
+    return formatted_date
+
+def match_date_to_today():
+    pass
+
+
 if __name__ == "__main__":
     # print(convert_unix_to_standard_time('09:33:58 AM'))
     pass

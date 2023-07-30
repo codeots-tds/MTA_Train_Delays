@@ -50,13 +50,13 @@ def create_table(conn, cur, sql_st):
         print(e)
 
 """insert data function"""
-def insert_data(conn, cur, df, sql_st):
+def insert_data(conn, cur, df, sql_st, tablename):
     cols = ','.join(df.columns)
     try:
         buffer = io.StringIO()
         df.to_csv(buffer, index=False, header=False, sep='\t')
         buffer.seek(0)
-        cur.copy_from(buffer, 'subway_station_table', sep='\t')
+        cur.copy_from(buffer, f'{tablename}', sep='\t')
         conn.commit()
     except psycopg2.Error as e:
         print("Error: Couldn't load data into postgres")
@@ -72,6 +72,6 @@ if __name__ == '__main__':
     for table_st in create_tables:
          create_table(conn = conn, cur = cur, sql_st = table_st)
 
-    insert_data(conn = conn, cur = cur, df = subway_station_df, sql_st = insert_table_query)
+    insert_data(conn = conn, cur = cur, df = subway_station_df, sql_st = insert_table_query, tablename='subway_station_table')
 
     pass

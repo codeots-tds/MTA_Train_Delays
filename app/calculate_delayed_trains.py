@@ -1,11 +1,10 @@
 import pandas as pd
-import datetime
-import time
 from datetime import datetime as dt
 
 from transform_alert_data import transformed_alert_data
 from transform_trip_data import transformed_trip_updates
 from transform_vehicle_data import transformed_vehicle_data
+from util import convert_str_to_date
 
 """
 Ways to determine if a train is delayed
@@ -56,14 +55,19 @@ class Delayed_Trains:
             continue
 
     def calculate_train_delays_by_alert(self): #WIP
-        self.alert_df['exists_in_trips_df'] = self.alert_df['trip_id'].isin(self.trip_df['trip_id'])
-        print(self.train_delay_dict)
-        for idx, trip_data in self.alert_df.iterrows():
-            train = trip_data['route_id']
-            exist_val = trip_data['exists_in_trips_df']
-            if exist_val == True:
-                self.train_delay_dict[train][0] += 1
-            continue
+        # print(self.alert_df, 'alert dataframe values')
+        # print(type(self.alert_df))
+        if not self.alert_df.empty:
+            self.alert_df['exists_in_trips_df'] = self.alert_df['trip_id'].isin(self.trip_df['trip_id'])
+            for idx, trip_data in self.alert_df.iterrows():
+                train = trip_data['route_id']
+                exist_val = trip_data['exists_in_trips_df']
+                if exist_val == True:
+                    self.train_delay_dict[train][0] += 1
+                self.train_delay_dict[train][0] += 0
+                continue
+        else:
+            print('No alert delays')
 
 
     def build_train_delay_df(self):
@@ -77,6 +81,22 @@ class Delayed_Trains:
                 self.train_delay_df.iloc[idx, 1:] = self.train_delay_dict[train]
             else:
                 continue
+        self.train_delay_df['date'] = self.train_delay_df['date'].apply(convert_str_to_date)
+
+
+# class Update_Delay_Report:
+#     def __init__(self, **kwargs):
+#         self.delay_repo_df = 
+#         pass
+
+delayed_trains_data = Delayed_Trains(
+    trip_data = transformed_trip_updates.trip_df,
+    vehicle_data = transformed_vehicle_data.vehicle_df,
+    alert_data = transformed_alert_data.alert_df
+)
+delayed_trains_data.train_delays_by_vehicle_trip()
+delayed_trains_data.calculate_train_delays_by_alert()
+delayed_trains_data.build_train_delay_df()
 
 
 if __name__ == '__main__':
@@ -88,3 +108,5 @@ if __name__ == '__main__':
     delayed_trains_data.train_delays_by_vehicle_trip()
     delayed_trains_data.calculate_train_delays_by_alert()
     delayed_trains_data.build_train_delay_df()
+    print(delayed_trains_data.train_delay_df)
+    print(type(delayed_trains_data.train_delay_df['date'][0]))

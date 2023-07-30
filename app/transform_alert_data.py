@@ -20,11 +20,14 @@ class Transform_Alert_Data:
     def parse_vehicle_alerts(self):
         trips = []
         for idx, item in enumerate(self.alert_data):
-            informed_entity = item['alert']['informed_entity']
-            for trip in informed_entity:
-                trip['trip']['id'] = item['alert']['id']
-                trip['trip']['alert_description'] = item['alert']['header_text']['translation'][0]['text']
-                trips.append(trip['trip'])
+            if 'informed_enetiy' in item['alert']:
+                informed_entity = item['alert']['informed_entity']
+                for trip in informed_entity:
+                    trip['trip']['id'] = item['alert']['id']
+                    trip['trip']['alert_description'] = item['alert']['header_text']['translation'][0]['text']
+                    trips.append(trip['trip'])
+            else:
+                print('No Alerts')
         self.alert_data = trips
 
     def convert_to_df(self):
