@@ -1,5 +1,6 @@
 import pandas as pd
-from preprocess_subway_data import pre_processed_subway_data
+from .preprocess_subway_data import pre_processed_subway_data
+from .util import convert_data_to_df
 import time
 import datetime
 
@@ -29,8 +30,8 @@ class Transform_Vehicle_Data:
         self.vehicle_updates = vehicle_info
 
     def convert_to_df(self):
-        self.vehicle_df = pd.DataFrame(self.vehicle_updates)
-        # print(self.vehicle_df)
+        self.vehicle_df = convert_data_to_df(self.vehicle_updates)
+
 
 transformed_vehicle_data = Transform_Vehicle_Data(data = pre_processed_subway_data.vehicle_updates)
 transformed_vehicle_data.flatten_vehicle_data()

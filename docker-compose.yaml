@@ -36,10 +36,21 @@ services:
       - mta-network
 
     # command: python /pyscripts/load_station_data_to_db.py
-
+  
+  airflow:
+    build:
+      context: ./airflow #this is for where your dockerfile is located for airflow
+      dockerfile: dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - mta-network
+    environment:
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_NAME
+    depends_on:
+      - mta_db_host
 volumes:
   mta_db_data:
 
 networks:
   mta-network:
-    

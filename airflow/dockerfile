@@ -1,0 +1,21 @@
+
+FROM apache/airflow:2.0.0
+
+
+#Copying Files
+COPY ../Pipfile ../Pipfile.lock ./
+#Copying DAG files
+COPY ./dags /opt/airflow/dags
+
+RUN apt-get update && \
+    apt-get install -y postgresql-client && \
+    pip install pipenv && \
+    rm -rf /var/lib/apt/lists/* && \
+    pipenv install --deploy --ignore-pipfile
+
+
+#EXPOSE Port
+EXPOSE 8080
+
+#START
+CMD ["airflow", "webserver"]
