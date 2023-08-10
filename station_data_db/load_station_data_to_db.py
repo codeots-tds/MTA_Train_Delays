@@ -1,5 +1,5 @@
 import pandas as pd
-from create_tables_schemas import *
+from .create_tables_schemas import *
 import psycopg2
 import os
 import io
@@ -9,8 +9,15 @@ from time import sleep
 load_dotenv()
 
 # subway_station_filepath = '/home/ra-terminal/datasets/mta_data/stationlocations.csv'
-subway_station_filepath = '/mta_data/stationlocations.csv'
-subway_station_df = pd.read_csv(subway_station_filepath)
+# subway_station_filepath = '../data/stationlocations.csv'
+# subway_station_filepath = '/mta_data/stationlocations.csv'
+# subway_station_df = pd.read_csv(subway_station_filepath)
+
+#dynamically generating an absolute path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+data_dir = os.path.join(os.path.dirname(current_dir), 'data')
+subway_station_filepath = os.path.join(data_dir, 'stationlocations.csv')
+
 
 def create_conn(max_retries = 5):
     retries = 0
@@ -32,9 +39,6 @@ def create_conn(max_retries = 5):
             retries += 1
     return conn
 
-insert_table_query = """COPY {subway_station_table} ({cols}) FROM STDIN WITH (FORMAT CSV, DELIMITER '\t')"""
-
-
 """dropping table query"""
 drop_data_table = """
 DROP TABLE IF EXISTS subway_station_table
@@ -50,7 +54,7 @@ def create_table(conn, cur, sql_st):
         print(e)
 
 """insert data function"""
-def insert_data(conn, cur, df, sql_st, tablename):
+def insert_data(df, sql_st, tablename):
     cols = ','.join(df.columns)
     try:
         buffer = io.StringIO()
@@ -63,15 +67,19 @@ def insert_data(conn, cur, df, sql_st, tablename):
         print(e)
     else:
         return "Data was loaded!"
-    
+
+conn = create_conn()
+cur = conn.cursor()
+insert_subway_data_query = """COPY {subway_station_table} ({cols}) FROM STDIN WITH (FORMAT CSV, DELIMITER '\t')"""
+
 
 if __name__ == '__main__':
-    conn = create_conn()
-    cur = conn.cursor()
-    cur.execute(drop_data_table)
-    for table_st in create_tables:
-         create_table(conn = conn, cur = cur, sql_st = table_st)
+    # conn = create_conn()
+    # cur = conn.cursor()
+    # cur.execute(drop_data_table)
+    # for table_st in create_tables:
+    #      create_table(conn = conn, cur = cur, sql_st = table_st)
 
-    insert_data(conn = conn, cur = cur, df = subway_station_df, sql_st = insert_table_query, tablename='subway_station_table')
+    # insert_data(df = subway_station_df, sql_st = insert_subway_data_query, tablename='subway_station_table')
 
     pass
