@@ -12,7 +12,9 @@ gtfs-realtime-bindings = "*"
 python-dotenv = "*"
 psycopg2 = "*"
 psycopg2-binary = "*"
-apache-airflow = "==2.0.0"
+apache-airflow = "*"
+yarl = "*"
+zipp = "*"
 
 [dev-packages]
 

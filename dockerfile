@@ -1,27 +1,34 @@
 FROM python:3.9
+#This is the dockerfile for the app service. The reason why docker build is throwing an error
+#is b/c docker build can't access parent directories for security reasons so thats why it can't access 
+# bin/wait_for_pg_db.sh script which is in the root directory. Now I have to move this dockerfile to the root directory.
+#another way to mitigate this is to run the docker build command at root directory.
 
-#working directory in app
-WORKDIR /subway_delay_app
-#copying all files in app directory
-COPY . /app/
+# Set the working directory in the container to /app
+WORKDIR /app
 
-#install pipenv, updating bash, postgres
-# RUN apt-get update && apt-get -y install python
+# Copy the contents of the app directory into the container's /app directory
+COPY ./app ./app
+
+# Copy the wait_for_pg_db.sh script from the bin directory on the host into the /app/bin directory in the container
+COPY ./bin/wait_for_pg_db.sh ../bin/
+
+# Update and install necessary packages
+RUN apt-get update && \
+    apt-get install -y postgresql-client && \
+    rm -rf /var/lib/apt/lists/* 
+
+# Install pipenv
 RUN pip install pipenv
-RUN apt-get update && apt-get install -y postgresql-client
 
-# Copy files over
-COPY Pipfile Pipfile.lock ./
-COPY ./bin/wait_for_pg_db.sh ./bin/wait_for_pg_db.sh
-COPY ./.env ./app/.env
+# Install dependencies from Pipfile
+RUN pipenv install
 
-# Run/Install dependencies
-RUN pipenv install --verbose
-RUN chmod +x ./bin/wait_for_pg_db.sh
+# Make the wait_for_pg_db.sh script executable
+RUN chmod +x ../bin/wait_for_pg_db.sh
 
+# Expose port 80
 EXPOSE 80
 
-# Define the command to run your app using CMD which defines your runtime
-# Replace 'your-command-here' with your own command
-# CMD ["./bin/wait_for_pg_db.sh"]
-CMD ["sleep", "800"]
+# Set the CMD to run the script when the container starts
+CMD ["sh", "../bin/wait_for_pg_db.sh"]

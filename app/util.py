@@ -1,6 +1,7 @@
 import json
 import time
 import datetime
+from datetime import date
 import pandas as pd
 from datetime import datetime as dt
 
@@ -28,8 +29,15 @@ def convert_str_to_date(date_str):
     formatted_date = new_date.strftime("%m/%d/%Y")
     return formatted_date
 
-def match_date_to_today():
-    pass
+def match_date_to_today(today_date, entry_date):
+    if today_date == date.today():
+        return True
+    else:
+        return False
+
+def get_report_date(df):
+    current_date = df['date'][0]
+    return current_date
 
 
 if __name__ == "__main__":

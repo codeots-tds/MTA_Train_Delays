@@ -54,7 +54,7 @@ def create_table(conn, cur, sql_st):
         print(e)
 
 """insert data function"""
-def insert_data(df, sql_st, tablename):
+def insert_data(df, tablename):
     cols = ','.join(df.columns)
     try:
         buffer = io.StringIO()
@@ -67,6 +67,22 @@ def insert_data(df, sql_st, tablename):
         print(e)
     else:
         return "Data was loaded!"
+    # finally:
+    #     conn.close()
+
+
+def delete_table_data(sql_st, tablename):
+    query = f'DELETE FROM {tablename}'
+    try:
+        cur.execute(query)
+        conn.commit()
+    except psycopg2.Error as e:
+        print(f"Error: Couldn't delete data from {tablename} table")
+        print(e)
+    else:
+        return "Data was loaded!"
+    finally:
+        conn.close()
 
 conn = create_conn()
 cur = conn.cursor()

@@ -1,21 +1,41 @@
+FROM apache/airflow:2.6.3
 
-FROM apache/airflow:2.0.0
+USER root
+
+# Update and clean up
+RUN apt-get update -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+USER airflow
+
+# Install pipenv
+RUN pip install pipenv
+RUN pip install --upgrade pipenv
+RUN pip install --upgrade pip setuptools wheel
+
+# Copy Pipfile and Pipfile.lock
+COPY ../Pipfile ../Pipfile.lock /
+
+# Install Python dependencies with pipenv
+# RUN cd / && pipenv install --verbose
 
 
-#Copying Files
-COPY ../Pipfile ../Pipfile.lock ./
-#Copying DAG files
-COPY ./dags /opt/airflow/dags
+# Copy necessary files and directories
+COPY ./airflow/airflow_home/dags /opt/airflow/dags
+COPY ./airflow/entrypoint.sh /entrypoint.sh
 
-RUN apt-get update && \
-    apt-get install -y postgresql-client && \
-    pip install pipenv && \
-    rm -rf /var/lib/apt/lists/* && \
-    pipenv install --deploy --ignore-pipfile
+#changing user to root to execute next command since it needs necessary permissions. then we change back to airflow
+USER root
 
+RUN chmod +x /entrypoint.sh
 
-#EXPOSE Port
+USER airflow
+
 EXPOSE 8080
+ENTRYPOINT ["/entrypoint.sh"]
 
-#START
-CMD ["airflow", "webserver"]
+
+
+# #START
+# # CMD ["airflow", "webserver"]

@@ -3,52 +3,49 @@ import pandas as pd
 from dotenv import load_dotenv
 import os
 from time import sleep
-from station_data_db.load_station_data_to_db import conn, cur, insert_data
+import station_data_db.load_station_data_to_db as loader
 
 station_data_path = '/home/ra-terminal/datasets/mta_data/stationlocations.csv'
 station_data_df = pd.read_csv(station_data_path)
 
 load_dotenv()
 
-class DB_OPS:
-    def __init__(self, **kwargs):
+class DatabaseOperations:
+    def __init__(self, conn = loader.conn, cur = loader.cur, **kwargs):
         self.conn = conn
         self.cur = cur
-        self.sql_st = None
-        self.df = None
-        pass
+        self.sql_st = kwargs.get('sql_st')
+        self.df = kwargs.get('dataframe')
+        self.tablename = kwargs.get('tablename')
 
-    def insert_table_data(self, sql_st, tablename):
-        insert_data()
+    def insert_to_data_table(self):
+        loader.insert_data(df = self.df, tablename = self.tablename)
 
-# def create_conn():
-#         print('Creating DB connection!')
-#         try:
-#             conn = psycopg2.connect(
-#                 #using docker container i.p to connect locally to it
-#                 # host = '192.168.0.2',
-#                 host = os.getenv('DB_HOST')
-#                 port = os.getenv('DB_PORT', '5432'),
-#                 database = os.getenv('DB_NAME'),
-#                 user = os.getenv('DB_USER', 'mtapg1'),
-#                 password = os.getenv('DB_PASSWORD', '')
-#             )
-#             print("Connection successful")
-#             return conn
-#         except psycopg2.OperationalError as e:
-#             print("Unable to connect to the database, Retrying")
-#             print(e)
-#             sleep(5)
+    def update_data_table(self, set_col, set_val, where_col, where_val):
+        try:
+            update_st = f"UPDATE {self.tablename} SET {set_col} %s WHERE {where_col} = %s;"
+            self.cur.execute(update_st, (set_val, where_val))
+            self.conn.commit()
+        except psycopg2.Error as e:
+            print("Error updating row in table:", e)
+            
+    def check_num_records_in_table(self, tablename):
+        query = f"SELECT COUNT(*) FROM  {tablename}"
+        count = 0
+        try:
+            self.cur.execute(query)
+            count = self.cur.fetchone([0])
+            self.conn.commit()
+        except psycopg2.Error as e:
+            print(f"Error fetching number of records from {tablename}:", e)
+        return count
 
-# def load_data(conn_obj, cur):
-#     print("Fetching data from the database...")
-#     query = 'SELECT * FROM subway_station_table;'
-#     cur.execute(query)
-#     df = pd.DataFrame(cur.fetchall())
-#     print("Query executed successfully")
 
-#     return df
+    def close_connection(self):
+        self.cur.close()
+        self.conn.close()
 
+    
 
 
 

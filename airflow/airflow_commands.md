@@ -9,3 +9,18 @@ To Start Airflow:
 -Make sure to configure location of airflow dag folder in airflow.cfg
 
 
+-initialize your airflow db inside your docker container:
+docker exec <your_container_name_or_id> airflow db init
+
+-starting the airflow webserver inside docker:
+docker exec <your_container_name_or_id> airflow webserver
+
+-starting airflow scheduler insider docker:
+docker exec <your_container_name_or_id> airflow scheduler
+
+OR
+-create an entrypoint script that activates airflow webserver/scheduler:
+
+
+
+

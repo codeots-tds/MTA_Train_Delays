@@ -2,9 +2,11 @@ version: "3.7"
 
 services:
   app:
-    build: ./
-    volumes:
-      - ./:/app
+    build:
+      context: . # This points to the root of your project.
+      dockerfile: ./dockerfile # Specify the location of the Dockerfile.
+    # volumes:
+    #   - ./app:/app #mounts the app directory on your local directory to your desired path in the container.
     environment: 
       DB_HOST : ${DB_HOST}
       DB_USER : ${DB_USER}
@@ -29,8 +31,8 @@ services:
     volumes:
       - mta_db_data:/var/lib/postgresql/data
       # - ./app/station_data_db:/pyscripts
-      - ../station_data_db:/pyscripts
-      - ./data:/mta_data/stationlocations.csv
+      - ./station_data_db:/pyscripts
+      - ./data:/mta_data
       - ./.env:/pyscripts/.env
     networks:
       - mta-network
@@ -39,8 +41,8 @@ services:
   
   airflow:
     build:
-      context: ./airflow #this is for where your dockerfile is located for airflow
-      dockerfile: dockerfile
+      context: . #is a set of files and directories that are made available to the build process. sets context to root directory. 
+      dockerfile: ./airflow/dockerfile #this is for where your dockerfile is located for airflow
     ports:
       - 8080:8080
     networks:
