@@ -48,7 +48,9 @@ services:
     networks:
       - mta-network
     environment:
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_NAME
+      # - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_NAME
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:5432/$DB_NAME
+
     depends_on:
       - mta_db_host
 volumes:
