@@ -14,23 +14,27 @@ RUN pip install pipenv
 RUN pip install --upgrade pipenv
 RUN pip install --upgrade pip setuptools wheel
 
-# Copy Pipfile and Pipfile.lock
-COPY ../Pipfile ../Pipfile.lock /
+# Copy Pipfile and Pipfile.lock. Copying from root directory where docker-compose.yaml file is, so not using ..
+COPY /Pipfile /Pipfile.lock /
 
 # Install Python dependencies with pipenv
 # RUN cd / && pipenv install --verbose
 
 
 # Copy necessary files and directories
+COPY ./app /app
 COPY ./airflow/airflow_home/dags /opt/airflow/dags
 COPY ./airflow/entrypoint.sh /entrypoint.sh
+
+#already ran this locally in terminal
+# RUN chmod +x /entrypoint.sh
 
 #changing user to root to execute next command since it needs necessary permissions. then we change back to airflow
 USER root
 
-RUN chmod +x /entrypoint.sh
-
 USER airflow
+
+ENV AIRFLOW__CORE__SQL_ALCHEMY_CONN=""
 
 EXPOSE 8080
 ENTRYPOINT ["/entrypoint.sh"]

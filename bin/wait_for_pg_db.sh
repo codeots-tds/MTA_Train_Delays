@@ -1,6 +1,8 @@
 #!/bin/bash
 set -a
-source ../.env
+#don't have to source the .env file b/c docker-compose.yaml will already be using
+#the .env variables
+# source ../.env
 set +a
 # set -e
 
@@ -10,4 +12,5 @@ until PGPASSWORD=$DB_PASSWORD psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c 
 done
 
 >&2 echo "Postgres is up - executing command"
-exec $cmd
+# exec $cmd
+exec "$@"
